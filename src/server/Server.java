@@ -1,5 +1,7 @@
 package server;
 
+import gui.InstantChatFrame;
+import gui.MainFrame;
 import gui.MainPane;
 
 import java.net.ServerSocket;
@@ -12,11 +14,11 @@ public class Server {
 	private ServerSocket serverSocket;
 
 	private List<ServiceHandler> handlerList;
-	private MainPane mainPane;
+	private MainFrame mainFrame;
 	
-	public Server(MainPane panel){
+	public Server(MainFrame frame){
 		handlerList = new ArrayList<ServiceHandler>();
-		mainPane = panel;
+		mainFrame = frame;
 	}
 	
 	public void startService(){
@@ -24,15 +26,6 @@ public class Server {
 			//初始化，设置服务端口为8001
 			serverSocket = new ServerSocket(8001);
 			System.out.println("服务器已开启，等待客户端连接......");
-			
-//			while(true){
-//				Socket socket = serverSocket.accept();
-//				System.out.println(socket.getInetAddress().toString() + "已连接");
-//				
-//				//启动一个hander
-//				handlerList.add(new ServiceHandler(socket, mainPane));
-//			}
-			
 			
 			new Thread(new Runnable() {
 				@Override
@@ -43,7 +36,7 @@ public class Server {
 							System.out.println(socket.getInetAddress().toString() + "已连接");
 							
 							//启动一个hander
-							handlerList.add(new ServiceHandler(socket, mainPane));
+							handlerList.add(new ServiceHandler(socket, mainFrame));
 							
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -61,6 +54,15 @@ public class Server {
 		for(ServiceHandler handler : handlerList){
 			//通知关闭
 			//TODO
+		}
+	}
+	
+	public void startP2P(String username){
+		for(ServiceHandler handler : handlerList){
+			if(handler.match(username)){
+				InstantChatFrame chatFrame = new InstantChatFrame();
+				chatFrame.setVisible(true);
+			}
 		}
 	}
 	

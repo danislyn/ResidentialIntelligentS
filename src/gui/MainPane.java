@@ -70,7 +70,7 @@ public class MainPane extends JPanel {
 	}
 	
 	private void customInit(){
-		server = new Server(this);
+		server = new Server(mainFrame);
 		server.startService();
 	}
 	

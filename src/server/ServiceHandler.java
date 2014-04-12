@@ -1,5 +1,6 @@
 package server;
 
+import gui.MainFrame;
 import gui.MainPane;
 
 import java.io.ObjectInputStream;
@@ -7,10 +8,11 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import beans.Message;
+import beans.MessageType;
 
 public class ServiceHandler {
 	
-	private MainPane mainPane;
+	private MainFrame mainFrame;
 
 	private Socket client;
 	private ObjectInputStream objInput;
@@ -18,9 +20,11 @@ public class ServiceHandler {
 	
 	private Thread readingThread;
 	
-	public ServiceHandler(Socket clientSocket, MainPane mainPane){
+	private String clientUsername;  //用于P2P，lazy fetch
+	
+	public ServiceHandler(Socket clientSocket, MainFrame frame){
 		this.client = clientSocket;
-		this.mainPane = mainPane;
+		this.mainFrame = frame;
 		
 		try {
 			objInput = new ObjectInputStream(client.getInputStream());
@@ -33,6 +37,11 @@ public class ServiceHandler {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	//用于P2P启动前寻址
+	public boolean match(String username){
+		return clientUsername.equals(username);
 	}
 	
 	
@@ -73,12 +82,19 @@ public class ServiceHandler {
 				
 				while(true){
 					msg = (Message) objInput.readObject();
-					
 					if(msg != null){
-//						System.out.println(msg.toString());
+						if(clientUsername == null){
+							clientUsername = msg.sourceUsername;
+						}
 						
-						mainPane.refreshMessageList(msg);
-						
+						//处理msg
+						if(msg.type == MessageType.ALARM){
+							mainFrame.pushAlarmMessage(msg);
+						}
+						else if(msg.type == MessageType.CHAT){
+							
+							
+						}
 					}
 				}
 				
