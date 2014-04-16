@@ -2,12 +2,12 @@ package server;
 
 import gui.InstantChatFrame;
 import gui.MainFrame;
-import gui.MainPane;
-
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+
+import beans.Message;
 
 public class Server {
 	
@@ -16,9 +16,12 @@ public class Server {
 	private List<ServiceHandler> handlerList;
 	private MainFrame mainFrame;
 	
+	private List<InstantChatFrame> chatList;
+	
 	public Server(MainFrame frame){
 		handlerList = new ArrayList<ServiceHandler>();
 		mainFrame = frame;
+		chatList = new ArrayList<InstantChatFrame>();
 	}
 	
 	public void startService(){
@@ -57,12 +60,44 @@ public class Server {
 		}
 	}
 	
-	public void startP2P(String username){
+	
+	//============================================
+	private InstantChatFrame getChatFrame(String toUsername){
+		for(InstantChatFrame chatFrame : chatList){
+			if(chatFrame.getToUsername().equals(toUsername)){
+				return chatFrame;
+			}
+		}
+		return null;
+	}
+	
+	public InstantChatFrame startP2P(String username){
+		//先从已有窗口里找
+		InstantChatFrame aliveFrame = getChatFrame(username);
+		if(aliveFrame != null){
+			aliveFrame.setVisible(true);
+			return aliveFrame;
+		}
+		
+		//创建新聊天窗口
 		for(ServiceHandler handler : handlerList){
 			if(handler.match(username)){
-				InstantChatFrame chatFrame = new InstantChatFrame();
+				InstantChatFrame chatFrame = new InstantChatFrame(username, handler);
 				chatFrame.setVisible(true);
+				
+				chatList.add(chatFrame);
+				return chatFrame;
 			}
+		}
+		
+		//无username匹配
+		return null;
+	}
+	
+	public void pushChatMessage(Message msg){
+		InstantChatFrame chatFrame = startP2P(msg.sourceUsername);
+		if(chatFrame != null){
+			chatFrame.refreshContent(msg);
 		}
 	}
 	

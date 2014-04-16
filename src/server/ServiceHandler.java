@@ -1,7 +1,6 @@
 package server;
 
 import gui.MainFrame;
-import gui.MainPane;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -9,6 +8,7 @@ import java.net.Socket;
 
 import beans.Message;
 import beans.MessageType;
+import db.operation.MessageOperation;
 
 public class ServiceHandler {
 	
@@ -50,6 +50,8 @@ public class ServiceHandler {
 		//通知关闭
 		//TODO
 //		readingThread.stop();
+		
+		//发一个关闭消息给client
 	}
 	
 	
@@ -58,6 +60,10 @@ public class ServiceHandler {
 		try {
 			objOutput.writeObject(msg);
 			objOutput.flush();
+			
+			//save message
+			MessageOperation.saveMessage(msg);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -83,17 +89,14 @@ public class ServiceHandler {
 				while(true){
 					msg = (Message) objInput.readObject();
 					if(msg != null){
-						if(clientUsername == null){
-							clientUsername = msg.sourceUsername;
-						}
-						
-						//处理msg
 						if(msg.type == MessageType.ALARM){
 							mainFrame.pushAlarmMessage(msg);
 						}
 						else if(msg.type == MessageType.CHAT){
-							
-							
+							mainFrame.pushChatMessage(msg);
+						}
+						else if(msg.type == MessageType.LOGIN){
+							clientUsername = msg.sourceUsername;
 						}
 					}
 				}

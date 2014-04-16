@@ -2,5 +2,6 @@ package beans;
 
 public enum MessageType {
 	CHAT,
-	ALARM
+	ALARM,
+	LOGIN
 }

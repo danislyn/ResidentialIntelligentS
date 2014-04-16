@@ -22,7 +22,11 @@ public class Message implements Serializable {
 	
 	@Override
 	public String toString(){
-		return sourceUsername + "(·¿ºÅ" + sourceResident + "): " + content + "        " + sdf.format(createTime);
+		return sourceUsername + "(·¿ºÅ" + sourceResident + "): " + content + "        " + getFormatTime();
+	}
+	
+	public String getFormatTime(){
+		return sdf.format(createTime);
 	}
 	
 }

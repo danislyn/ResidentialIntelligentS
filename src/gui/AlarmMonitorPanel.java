@@ -41,7 +41,7 @@ public class AlarmMonitorPanel extends JPanel {
 		replyBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Message msg = messageList.get(alarmList.getSelectedIndex());
-				
+				mainFrame.startChat(msg.sourceUsername);
 			}
 		});
 		replyBtn.setFont(new Font("ËÎÌו", Font.PLAIN, 14));
