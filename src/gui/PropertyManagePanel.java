@@ -57,7 +57,7 @@ public class PropertyManagePanel extends JPanel {
 	
 	//======================================================
 	class ResourceModel extends AbstractTableModel{
-		String[] columns = {"房号", "资源类型", "本期总量", "本期用量", "本期截止日期"};
+		String[] columns = {"房号", "资源类型", "本期总量", "本期用量", "本期截止日期", "本期费用"};
 		List<Resource> data = new ArrayList<Resource>();
 		
 		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
@@ -109,6 +109,10 @@ public class PropertyManagePanel extends JPanel {
 				break;
 			case 4:
 				val = sdf.format(res.endDate);
+				break;
+			case 5:
+				val = res.type == 1 ? decimalFormat.format(res.consumed*0.6)+"元" : 
+									  decimalFormat.format(res.consumed*1.2)+"元";
 				break;
 			}
 			return val;
